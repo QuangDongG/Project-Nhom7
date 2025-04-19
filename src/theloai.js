@@ -1,23 +1,44 @@
-import { Trangdoctruyen } from "./Local_main.js";
-//import { hideTL } from "../tt.js";
-const diV = document.querySelector(".divTL");
+import {
+  Trangdoctruyen,
+  TimKiem,
+  TheLoai,
+  HienThiThongTin,
+  LichSu,
+  addTruyen,
+  bool,
+  luu_bien,
+} from "./Local_main.js";
 
+const diV = document.querySelector(".divTL");
 const urlParams = new URLSearchParams(window.location.search);
 const countPage = 24;
 let currentPage = 1;
 let dataPage = [];
 const data = decodeURIComponent(urlParams.get("data")); // Lấy giá trị của 'data'
 const page = decodeURIComponent(urlParams.get("page"));
+const keyword = urlParams.get("keyword");
 console.log(page);
 console.log(data);
 
 console.log(data);
+
 const ulImg = document.querySelector(".ulImg");
 async function theLoaiCapNhat() {
   try {
-    let theloai = await axios.get(
-      "https://otruyenapi.com/v1/api/the-loai/" + data + "?page=" + page
-    );
+    let theloai;
+    if (data === "truyen-moi") {
+      theloai = await axios.get(
+        "https://otruyenapi.com/v1/api/danh-sach/" + data + "?page=" + page
+      );
+    } else if (data === "tim-kiem") {
+      theloai = await axios.get(
+        ` https://otruyenapi.com/v1/api/${data}?page=${page}&keyword=${keyword}`
+      );
+    } else {
+      theloai = await axios.get(
+        "https://otruyenapi.com/v1/api/the-loai/" + data + "?page=" + page
+      );
+    }
 
     console.log(theloai);
 
@@ -39,7 +60,6 @@ export function phanTrang(page) {
 
   arrayChild.forEach((item) => {
     console.log(item.thumb_url); //
-
     const creatDiv = document.createElement("div");
     creatDiv.classList.add("divImg");
 
@@ -50,10 +70,15 @@ export function phanTrang(page) {
       "https://img.otruyenapi.com/uploads/comics/" + item.thumb_url;
     const pCreat = document.createElement("p");
     pCreat.textContent = "Đọc Truyện";
-    pCreat.classList.add("pCreat");
+    pCreat.classList.add("p2Creat");
     creatDiv.append(creatImg);
     diV.append(creatDiv);
     creatDiv.append(pCreat);
+    pCreat.addEventListener("click", function () {
+      LichSu(item, bool, luu_bien);
+    });
+
+    HienThiThongTin(item, creatImg);
     //
     Trangdoctruyen(item, pCreat);
   });
@@ -103,6 +128,36 @@ export function numberPage(items) {
     });
   }
 }
-//tloai
+const string = "";
+export function hideTL() {
+  const theLoai = document.querySelector(".theLoaiover");
+  const theloai2 = document.querySelector(".theloai2");
 
+  theLoai.addEventListener("mouseover", function () {
+    theloai2.style.visibility = "visible";
+    theloai2.style.opacity = "1";
+    theloai2.style.transform = "translate(0)";
+    theloai2.style.transition = "0.5s";
+  });
+  theLoai.addEventListener("mouseout", function () {
+    theloai2.style.visibility = "hidden";
+    theloai2.style.opacity = "0";
+    theloai2.style.transform = "translate(10vw)";
+  });
+}
+//
+window.addEventListener("click", function () {
+  console.log(bool);
+  console.log(luu_bien);
+});
+//tloai
+const lichsuul = document.querySelector(".lichsuul2");
+const lichsua = document.querySelector(".lichsua2");
+const divtheloai2 = document.querySelector(".divtheloai2");
+document.addEventListener("DOMContentLoaded", function () {
+  addTruyen(lichsua, lichsuul);
+});
+TimKiem(string);
+hideTL();
+TheLoai(string, divtheloai2);
 theLoaiCapNhat();
